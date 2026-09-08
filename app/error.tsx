@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Subtitle } from "@/ui/subtitle";
 import { Title } from "@/ui/title";
 
@@ -11,13 +12,14 @@ export default function Error({ retry }: { retry: () => void }) {
         <Subtitle role="alert" className="mt-2">
           Could not load currencies. Please try again.
         </Subtitle>
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={retry}
-          className="mt-4 rounded text-sm text-blue-600 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-blue-400"
+          className="mt-4"
         >
           Retry
-        </button>
+        </Button>
       </section>
     </main>
   );
