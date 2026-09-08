@@ -1,9 +1,9 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 import type { Currency } from "@/lib/currencies";
-import { currencyConverterSchema } from "@/lib/utils/schema";
+import { useCurrencyConversion } from "@/lib/hooks/useCurrencyConversion";
+import { currencyConversionQuerySchema } from "@/lib/utils/schema";
 import { CurrencySelect } from "@/ui/currency-select";
 import { NumberInput } from "@/ui/inputs/number-input";
 import { Subtitle } from "@/ui/subtitle";
@@ -13,15 +13,31 @@ type CurrencyConverterProps = {
   currencies: readonly Currency[];
 };
 
+type AmountInput = {
+  side: "from" | "to";
+  text: string;
+};
+
 export function CurrencyConverter({ currencies }: CurrencyConverterProps) {
-  const {
-    control,
-    register,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(currencyConverterSchema),
-    defaultValues: { amount: 1, from: "USD", to: "EUR" },
-    mode: "onChange",
+  const [input, setInput] = useState<AmountInput>({
+    side: "from",
+    text: "1",
+  });
+  const [from, setFrom] = useState("USD");
+  const [to, setTo] = useState("EUR");
+
+  const amountResult = currencyConversionQuerySchema.shape.amount.safeParse(
+    input.text,
+  );
+  const amount = amountResult.data;
+  const amountError = amountResult.error?.issues[0]?.message;
+  const sourceCurrency = input.side === "from" ? from : to;
+  const targetCurrency = input.side === "from" ? to : from;
+
+  const { convertedAmount, error } = useCurrencyConversion({
+    amount,
+    from: sourceCurrency,
+    to: targetCurrency,
   });
 
   return (
@@ -35,41 +51,41 @@ export function CurrencyConverter({ currencies }: CurrencyConverterProps) {
       <div className="mt-8 grid gap-5">
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-start gap-3">
           <NumberInput
-            {...register("amount", { valueAsNumber: true })}
             label="Amount"
+            value={input.side === "from" ? input.text : convertedAmount}
+            onChange={(event) => {
+              setInput({ side: "from", text: event.currentTarget.value });
+            }}
             min={0}
             required
-            error={errors.amount?.message}
+            error={input.side === "from" ? amountError : error?.message}
           />
-          <Controller
+          <CurrencySelect
             name="from"
-            control={control}
-            render={({ field }) => (
-              <CurrencySelect
-                {...field}
-                label="From"
-                currencies={currencies}
-              />
-            )}
+            label="From"
+            value={from}
+            onChange={(event) => setFrom(event.currentTarget.value)}
+            currencies={currencies}
           />
         </div>
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-start gap-3">
           <NumberInput
             label="Converted amount"
-            value=""
+            value={input.side === "to" ? input.text : convertedAmount}
+            onChange={(event) => {
+              setInput({ side: "to", text: event.currentTarget.value });
+            }}
             placeholder="0.00"
-            readOnly
+            min={0}
+            required
+            error={input.side === "to" ? amountError : error?.message}
           />
-          <Controller
+          <CurrencySelect
             name="to"
-            control={control}
-            render={({ field }) => (
-              <CurrencySelect
-                {...field}
-                label="To"
-                currencies={currencies}
-              />
-            )}
+            label="To"
+            value={to}
+            onChange={(event) => setTo(event.currentTarget.value)}
+            currencies={currencies}
           />
         </div>
       </div>
