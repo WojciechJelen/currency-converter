@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const conversionResponseSchema = z.object({
+  response: z.object({
+    value: z.number().nonnegative(),
+  }),
+});
+
 export const currenciesResponseSchema = z.object({
   response: z
     .array(
