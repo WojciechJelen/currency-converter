@@ -26,16 +26,6 @@
 
 Restart the development server after changing `.env.local`.
 
-## Running a production build
-
-With a valid API key configured in `.env.local`, run:
-
-```sh
-pnpm build
-pnpm start
-```
-
-The production server also runs at [http://localhost:3000](http://localhost:3000). The API key is required during both the build and runtime.
 
 ## Running tests
 
@@ -63,20 +53,25 @@ pnpm test tests/currency-converter.test.tsx
 ### Fetch the currency list on the server
 
 We fetch and cache the currency list on the server because it changes rarely. This
-makes the options available when the page loads and avoids overfetching the same, rather stale data.
-I also wanted to demonstrate that I know the difference between client and server components.
+makes the options available when the page loads and avoids repeatedly fetching the same data.
+I also wanted to demonstrate my understanding of client and server components.
 
 ### Request conversions from the browser
 
-The conversion happens on the client. The exchange rates are chaning frequently so we always have recent rates.
-I added small debounce to avoid spamming server with request on every input field change.
-`tanstack-queery` has disabled caching because we always want to have fresh rates.
+Conversion requests start in the browser, and the server gets the converted amount from CurrencyBeacon.
+Exchange rates can change, so I configured TanStack Query to request fresh results instead of reusing previous ones.
+I added a short debounce to avoid sending a request on every keystroke.
 
 ### Libraries and tools
-Initially, I wrote UI components myself, but I decided to swtich to shadcn primitives later, because
-the task description was enouraging to use libraries and tools, and because it was in the company tech-stack.
-Besides, it gives you a lot of good stuff (accessibility, browser compatibility etc) out of the box.
 
-I used NextJS because it was in the tech stack that company uses, same with `tanstack-queery`.
-Second reason I wanted to demonstrate my familiarity with this library. And last but not least, It allowed to to write simpler
-and more compact code, that was easy to encapuslate in the dedicated hook.
+Initially, I wrote the UI components myself, but I later switched to `shadcn/ui` because
+the task encouraged using libraries and tools, and it is part of the company's tech stack.
+It also provides accessibility and browser compatibility features out of the box.
+
+I used Next.js and TanStack Query because both are part of the company's tech stack.
+I also wanted to demonstrate my familiarity with them. TanStack Query helped me keep
+the conversion logic simple and contained in a dedicated hook.
+
+
+### Extra features
+I implemented bi-directional conversion, to implment it closer to google currencies converter.
