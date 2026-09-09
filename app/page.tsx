@@ -1,5 +1,5 @@
 import { CurrencyConverter } from "@/components/currency-converter";
-import { loadCurrencies } from "@/lib/loadCurrencies";
+import { loadCurrencies } from "@/lib/load-currencies";
 
 export default async function Home() {
   const currencies = await loadCurrencies();

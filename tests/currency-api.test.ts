@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/convert/route";
-import { loadCurrencies } from "@/lib/loadCurrencies";
+import { loadCurrencies } from "@/lib/load-currencies";
 
 vi.mock("server-only", () => ({}));
 
